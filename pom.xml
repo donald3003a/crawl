@@ -135,5 +135,11 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+		<groupId>jasperreports</groupId>
+		<artifactId>jasperreports</artifactId>
+		<version>3.5.3</version>
+		</dependency>
 	</dependencies>
+	<packaging>war</packaging>
 </project>
