@@ -133,8 +133,9 @@ public class IteyeParse extends AbstractParse{
 		List<String> allUrls = getAllArticleUrls(rootUrl);
 		for(String url : allUrls) {
 			ArticleInfoDTO article = getArticleFromPage(url);
+			result.add(article);
 		}
-		return null;
+		return result;
 	}
 
 	@Override

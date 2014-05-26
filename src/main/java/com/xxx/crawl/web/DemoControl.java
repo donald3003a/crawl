@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.xxx.crawl.domain.Demo;
 import com.xxx.crawl.dto.ArticleInfoDTO;
 import com.xxx.crawl.parse.CsdnParse;
+import com.xxx.crawl.parse.IteyeParse;
 import com.xxx.crawl.service.ArticleService;
 import com.xxx.crawl.service.DemoService;
 
@@ -46,7 +47,7 @@ public class DemoControl {
 	@ResponseBody
 	public void testIteye() {
 		System.out.println("test begin");
-		CsdnParse cp = new CsdnParse();
+		IteyeParse cp = new IteyeParse();
 		List<ArticleInfoDTO> result = new  ArrayList<ArticleInfoDTO>();
 		result = cp.getArticleInfo();
 		articleService.saveArticles(result);
