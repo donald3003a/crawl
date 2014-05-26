@@ -6,8 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -28,10 +26,6 @@ public class ArticleCategoryDTO implements Serializable{
 	@Column
 	private Long articleId;
 	
-//	@ManyToOne(targetEntity = ArticleInfoDTO.class)
-//	@JoinColumn(name="articleId",updatable=false,insertable=false)
-//	private ArticleInfoDTO articleInfo;
-
 	public Long getArticleCategoryId() {
 		return articleCategoryId;
 	}

@@ -29,6 +29,8 @@ import com.xxx.crawl.util.Util;
 
 public class IteyeParse extends AbstractParse{
 
+	private String rootUrl = UrlConsts.ITEYE_BLOG_URL;
+	
 	@Override
 	public ArticleInfoDTO getArticleFromPage(String articleUrl) {
 		String htmlStr = CrawlerUtil.downPageText(articleUrl);
@@ -126,7 +128,7 @@ public class IteyeParse extends AbstractParse{
 	}
 
 	@Override
-	public List<ArticleInfoDTO> getArticleInfo(String rootUrl) {
+	public List<ArticleInfoDTO> getArticleInfo() {
 		List<ArticleInfoDTO> result = new ArrayList<ArticleInfoDTO>();
 		List<String> allUrls = getAllArticleUrls(rootUrl);
 		for(String url : allUrls) {

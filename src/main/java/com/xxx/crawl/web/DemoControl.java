@@ -14,7 +14,6 @@ import com.xxx.crawl.dto.ArticleInfoDTO;
 import com.xxx.crawl.parse.CsdnParse;
 import com.xxx.crawl.service.ArticleService;
 import com.xxx.crawl.service.DemoService;
-import com.xxx.crawl.url.UrlConsts;
 
 @Controller
 public class DemoControl {
@@ -32,13 +31,24 @@ public class DemoControl {
 		return orderList;
 	}
 	
-	@RequestMapping(value = "/test.do", method = { RequestMethod.GET })
+	@RequestMapping(value = "/csdn.do", method = { RequestMethod.GET })
 	@ResponseBody
-	public void test() {
+	public void testCsdn() {
 		System.out.println("test begin");
 		CsdnParse cp = new CsdnParse();
 		List<ArticleInfoDTO> result = new  ArrayList<ArticleInfoDTO>();
-		result = cp.getArticleInfo(UrlConsts.CSDN_BLOG_URL);
+		result = cp.getArticleInfo();
+		articleService.saveArticles(result);
+		System.out.println("test begin");
+	}
+	
+	@RequestMapping(value = "/iteye.do", method = { RequestMethod.GET })
+	@ResponseBody
+	public void testIteye() {
+		System.out.println("test begin");
+		CsdnParse cp = new CsdnParse();
+		List<ArticleInfoDTO> result = new  ArrayList<ArticleInfoDTO>();
+		result = cp.getArticleInfo();
 		articleService.saveArticles(result);
 		System.out.println("test begin");
 	}
@@ -46,7 +56,7 @@ public class DemoControl {
 	public static void main(String[] args) {
 		CsdnParse cp = new CsdnParse();
 		List<ArticleInfoDTO> result = new  ArrayList<ArticleInfoDTO>();
-		result = cp.getArticleInfo(UrlConsts.CSDN_BLOG_URL);
+		result = cp.getArticleInfo();
 		System.out.println("end");
 	}
 }
