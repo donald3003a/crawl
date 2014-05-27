@@ -15,6 +15,9 @@ public ArticleReportDTO(String group,int sumReadTimes,int articleSum){
 	this.sumReadTimes=sumReadTimes;
 	this.articleSum=articleSum;
 }
+public ArticleReportDTO(){
+	
+}
 public String getGroup() {
 	return group;
 }

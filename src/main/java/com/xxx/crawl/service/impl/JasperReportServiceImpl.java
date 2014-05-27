@@ -17,15 +17,21 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.xxx.crawl.common.dto.ArticleDTO;
 import com.xxx.crawl.common.dto.ArticleReportDTO;
 import com.xxx.crawl.common.dto.QueryCreteria;
+import com.xxx.crawl.dao.ArticleDao;
+import com.xxx.crawl.dto.ArticleInfoDTO;
+import com.xxx.crawl.service.ArticleService;
 import com.xxx.crawl.service.JasperReportService;
 
 @Service("jasperReportService")
 public class JasperReportServiceImpl  implements JasperReportService{
+	
+	
 	Log log=LogFactory.getLog(getClass());
 	public void compileReportXml(String srcJrxml) throws JRException{
 		String desJasper=srcJrxml.replace("jrxml", "jasper");
@@ -36,18 +42,17 @@ public class JasperReportServiceImpl  implements JasperReportService{
 			throw e;
 		}
 	}
-	public byte[] createPdfReportFile(List<ArticleDTO> artileList) throws JRException{
-		  File reportFilePath =new File( "D:\\goodPrint2.jasper");
+	public byte[] createPdfReportFile(List<ArticleReportDTO> artileList,String jasperTemplateFile) throws JRException{
+		  File reportFilePath =new File( jasperTemplateFile);
 		  JRDataSource dataSource = new JRBeanCollectionDataSource(artileList);;
 		  JasperReport report = (JasperReport)JRLoader.loadObject(reportFilePath);
 		  JasperPrint jasperPrint = JasperFillManager.fillReport(report, null, dataSource);
 		  byte pdf[]=JasperExportManager.exportReportToPdf(jasperPrint);
 		  return pdf;
 	}
-	public String  createHtmlReportFile(List<ArticleReportDTO> artileList) throws JRException{
-		
-		File reportFilePath =new File( "D:\\report5.jasper");
-		JRDataSource dataSource = new JRBeanCollectionDataSource(artileList);;
+	public String  createHtmlReportFile(List<ArticleReportDTO> artileList,String jasperTemplateFile) throws JRException{
+		File reportFilePath =new File(jasperTemplateFile);
+		JRDataSource dataSource = new JRBeanCollectionDataSource(artileList);
 		JasperReport report = (JasperReport)JRLoader.loadObject(reportFilePath);
 		JasperPrint jasperPrint = JasperFillManager.fillReport(report, null, dataSource);
 		String htmlUrl=new Date().getTime()+".html";
@@ -55,7 +60,6 @@ public class JasperReportServiceImpl  implements JasperReportService{
 		return htmlUrl;
 		
 	}
-	@Override
 	public List<ArticleDTO> queryAritcle(QueryCreteria creteria) {
 		List<ArticleDTO> goodList=new ArrayList<ArticleDTO>();
 		goodList.add(new ArticleDTO("一致性hash算法","AAAAA","技术",new Date(),20,189,100,"访问安全组"));
@@ -64,14 +68,6 @@ public class JasperReportServiceImpl  implements JasperReportService{
 		goodList.add(new ArticleDTO("多线程安全","DDDD","管理",new Date(),34,250,450,"文件服务组"));
 		return goodList;
 	}
-	
-	public static void main(String[] args) throws JRException {
-		String jrxml="D:\\report5.jrxml";
-		JasperReportServiceImpl service=new JasperReportServiceImpl();
-		service.compileReportXml(jrxml);
-		service.createHtmlReportFile(service.querygroupArticle());
-	}
-	
 	public List<ArticleReportDTO> querygroupArticle(){
 		List<ArticleReportDTO> goodList=new ArrayList<ArticleReportDTO>();
 		goodList.add(new ArticleReportDTO("访问安全组",500,10));

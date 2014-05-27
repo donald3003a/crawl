@@ -17,4 +17,10 @@ public class ArticleServiceImpl implements ArticleService{
 	public void saveArticles(List<ArticleInfoDTO> articles)  {
 		articleDao.saveArticles(articles);
 	}
+
+	@Override
+	public List<ArticleInfoDTO> queryReportData() {
+		return  articleDao.queryReportData();
+	}
+	
 }
