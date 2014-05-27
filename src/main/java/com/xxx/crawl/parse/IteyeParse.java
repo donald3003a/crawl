@@ -38,21 +38,37 @@ public class IteyeParse extends AbstractParse{
 		NodeFilter filter = new CssSelectorNodeFilter("div[class='blog_main']");
 		NodeFilter titleFilter = new TagNameFilter("h3");
 		NodeFilter articleInfoFilter = new TagNameFilter("ul");
+		NodeFilter tagFilter = new CssSelectorNodeFilter("div[class='news_tag']");
 		NodeFilter otherAttrFilter = new CssSelectorNodeFilter("div[class='blog_bottom']");
 		
 		NodeList articleDetailNodes = nodeList.extractAllNodesThatMatch(filter, true);
 		NodeList titleNodes = articleDetailNodes.extractAllNodesThatMatch(titleFilter, true);
+		NodeList tagList = articleDetailNodes.extractAllNodesThatMatch(tagFilter, true);
 		NodeList categoryNodes = articleDetailNodes.extractAllNodesThatMatch(articleInfoFilter,true);
 		NodeList otherNodes = articleDetailNodes.extractAllNodesThatMatch(otherAttrFilter);
 		
 		String articleTitle = titleNodes.elementAt(0).toPlainTextString().trim();
 		articleTitle = Util.getCleanText(articleTitle);
 		
+		String group = null;
+		String author = null;
+		Div tagDiv = (Div)  tagList.elementAt(0);
+		if(tagDiv.getChildCount() > 0) {
+			String tagText = tagDiv.getChild(tagDiv.getChildCount()-1).toPlainTextString();
+			if(Util.matchTag(tagText)) {
+				group = tagText.split("-")[0];
+				group = Util.group.get(group.toUpperCase());
+				author = tagText.split("-")[1];
+				author = Util.user.get(author.toUpperCase());
+			}
+		}
+		
+		System.out.println(group+":"+author);
 		
 		Set<ArticleCategoryDTO> category = new HashSet<ArticleCategoryDTO>();
 		int readTimes=0;
 		int commentTimes=0;
-		Date updateDate  = null;
+		Date publishDate = null;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 		
 		SimpleNodeIterator iter = categoryNodes.elements();
@@ -83,7 +99,7 @@ public class IteyeParse extends AbstractParse{
 			Node[] nodes = otherArrtNodes.toNodeArray();
 			for(int i=0;i<nodes.length;i++) {
 				if(nodes[i] instanceof BulletList) {
-					updateDate = sdf.parse(nodes[i].getChildren().elementAt(1).toPlainTextString());
+					publishDate = sdf.parse(nodes[i].getChildren().elementAt(1).toPlainTextString());
 					readTimes = Integer.parseInt(nodes[i].getChildren().elementAt(3).toPlainTextString().replaceAll("浏览","").trim());
 					String commentTimesStr = nodes[i].getChildren().elementAt(5).toPlainTextString();
 					commentTimes = Integer.parseInt(commentTimesStr.substring(commentTimesStr.indexOf("(")+1,commentTimesStr.indexOf(")")));
@@ -101,6 +117,7 @@ public class IteyeParse extends AbstractParse{
 		article.setTitle(articleTitle);
 		article.setUrl(articleUrl);
 		article.setReadTimes(readTimes);
+		article.setPublishDate(publishDate);
 		return article;
 	}
 

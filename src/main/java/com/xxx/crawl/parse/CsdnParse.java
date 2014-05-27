@@ -38,14 +38,31 @@ public class CsdnParse extends AbstractParse{
 		NodeList nodeList = getNodeList(htmlStr);
 		NodeFilter filter = new CssSelectorNodeFilter("div[class='details']");
 		NodeFilter titleFilter = new TagNameFilter("h1");
+		NodeFilter tagFilter = new CssSelectorNodeFilter("div[class='tag2box']");
 		NodeFilter articleInfoFilter = new CssSelectorNodeFilter("div[class='article_manage']");
 		
 		NodeList articleDetailNodes = nodeList.extractAllNodesThatMatch(filter, true);
 		NodeList titleNodes = articleDetailNodes.extractAllNodesThatMatch(titleFilter, true);
+		NodeList tagList = articleDetailNodes.extractAllNodesThatMatch(tagFilter, true);
 		NodeList articleInfoNodes = nodeList.extractAllNodesThatMatch(articleInfoFilter,true);
 		
 		String articleTitle = titleNodes.elementAt(0).toPlainTextString().trim();
 		articleTitle = Util.getCleanText(articleTitle);
+		
+		String group = null;
+		String author = null;
+		Div tagDiv = (Div)  tagList.elementAt(0);
+		if(tagDiv.getChildCount() > 0) {
+			String tagText = tagDiv.getChild(tagDiv.getChildCount()-1).toPlainTextString();
+			if(Util.matchTag(tagText)) {
+				group = tagText.split("-")[0];
+				group = Util.group.get(group.toUpperCase());
+				author = tagText.split("-")[1];
+				author = Util.user.get(author.toUpperCase());
+			}
+		}
+		
+		System.out.println(group+":" +author);
 		
 		Div div = (Div) articleInfoNodes.elementAt(0);
 		String category = "";
@@ -88,6 +105,8 @@ public class CsdnParse extends AbstractParse{
 		article.setUrl(articleUrl);
 		article.setReadTimes(readTimes);
 		article.setUpdateDate(updateDate);
+		article.setDevGroup(group);
+		article.setAuthor(author);
 		return article;
 	}
 	
