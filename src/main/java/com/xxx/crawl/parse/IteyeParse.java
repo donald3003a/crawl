@@ -125,6 +125,7 @@ public class IteyeParse extends AbstractParse{
 		article.setUrl(articleUrl);
 		article.setReadTimes(readTimes);
 		article.setPublishDate(publishDate);
+		article.setAuthor(author);
 		article.setSource("ITEYE");
 		if(currentRootUrl.equals(UrlConsts.ITEYE_BLOG_URL)) {
 			article.setBlogId("小码哥BASE64");
