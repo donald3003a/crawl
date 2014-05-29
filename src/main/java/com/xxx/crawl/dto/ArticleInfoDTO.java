@@ -40,6 +40,18 @@ public class ArticleInfoDTO implements Serializable{
 	private String devGroup;
 	
 	@Column
+	private String source;
+	
+	@Column
+	private String blogId;
+	
+	public String getBlogId() {
+		return blogId;
+	}
+	public void setBlogId(String blogId) {
+		this.blogId = blogId;
+	}
+	@Column
 	private Date updateDate = new Date();
 	
 	@OneToMany(cascade=CascadeType.ALL,fetch = FetchType.LAZY)
@@ -99,6 +111,12 @@ public class ArticleInfoDTO implements Serializable{
 	}
 	public void setPublishDate(Date publishDate) {
 		this.publishDate = publishDate;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
 	}
 	
 }

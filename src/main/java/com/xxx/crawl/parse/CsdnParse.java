@@ -29,7 +29,14 @@ import com.xxx.crawl.util.Util;
 
 public class CsdnParse extends AbstractParse{
 
-	private String rootUrl = UrlConsts.CSDN_BLOG_URL;
+	private static List<String> rootUrls = new ArrayList<String>();
+	
+	static {
+		rootUrls.add(UrlConsts.CSDN_BLOG_URL);
+		rootUrls.add(UrlConsts.CSDN_EXPERT_BLOG_URL);
+	}
+	
+	private String currentRootUrl;
 	
 	@Override
 	public ArticleInfoDTO getArticleFromPage(String articleUrl) {
@@ -107,6 +114,12 @@ public class CsdnParse extends AbstractParse{
 		article.setUpdateDate(updateDate);
 		article.setDevGroup(group);
 		article.setAuthor(author);
+		article.setSource("CSDN");
+		if(currentRootUrl.equals(UrlConsts.CSDN_BLOG_URL)) {
+			article.setBlogId("小码哥BASE64");
+		} else if(currentRootUrl.equals(UrlConsts.CSDN_EXPERT_BLOG_URL)) {
+			article.setBlogId("戈尔-D-罗杰");
+		}
 		return article;
 	}
 	
@@ -122,10 +135,12 @@ public class CsdnParse extends AbstractParse{
 		NodeList nodelist = page.getBody();
 		NodeFilter filter = new CssSelectorNodeFilter("div[class='pagelist']");
 		nodelist = nodelist.extractAllNodesThatMatch(filter, true);
-		Div div = (Div) nodelist.elementAt(0);
-		for(Node node : div.getChildrenAsNodeArray()) {
-			if("下一页".equals(node.toPlainTextString())) {
-				return UrlConsts.CSDN_URL+((LinkTag)node).getAttribute("href");
+		if(nodelist.size() > 0) {
+			Div div = (Div) nodelist.elementAt(0);
+			for(Node node : div.getChildrenAsNodeArray()) {
+				if("下一页".equals(node.toPlainTextString())) {
+					return UrlConsts.CSDN_URL+((LinkTag)node).getAttribute("href");
+				}
 			}
 		}
 		return "";
@@ -134,10 +149,13 @@ public class CsdnParse extends AbstractParse{
 	@Override
 	public List<ArticleInfoDTO> getArticleInfo() {
 		List<ArticleInfoDTO> result = new ArrayList<ArticleInfoDTO>();
-		List<String> allUrls = getAllArticleUrls(rootUrl);
-		for(String url : allUrls) {
-			ArticleInfoDTO article = getArticleFromPage(url);
-			result.add(article);
+		for(String rootUrl : rootUrls) {
+			currentRootUrl = rootUrl;
+			List<String> allUrls = getAllArticleUrls(rootUrl);
+			for(String url : allUrls) {
+				ArticleInfoDTO article = getArticleFromPage(url);
+				result.add(article);
+			}
 		}
 		return result;
 	}
