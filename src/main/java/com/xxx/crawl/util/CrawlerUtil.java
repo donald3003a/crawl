@@ -21,7 +21,7 @@ public class CrawlerUtil {
 			//回车，获得响应状态码
 			int statusCode=httpclient.executeMethod(getMethod);
 			InputStream in = getMethod.getResponseBodyAsStream();
-			String result = IOUtils.toString(in);
+			String result = IOUtils.toString(in,"UTF-8");
 			return result;
 			
 		} catch (IOException e) {

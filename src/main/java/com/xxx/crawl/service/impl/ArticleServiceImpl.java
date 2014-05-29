@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.xxx.crawl.common.dto.QueryCreteria;
 import com.xxx.crawl.dao.ArticleDao;
 import com.xxx.crawl.dto.ArticleInfoDTO;
 import com.xxx.crawl.service.ArticleService;
@@ -19,8 +20,13 @@ public class ArticleServiceImpl implements ArticleService{
 	}
 
 	@Override
-	public List<ArticleInfoDTO> queryReportData() {
-		return  articleDao.queryReportData();
+	public List<ArticleInfoDTO> queryReportData(QueryCreteria dto) {
+		return  articleDao.queryReportData(dto);
+	}
+
+	@Override
+	public List<ArticleInfoDTO> queryArticles(QueryCreteria articleInfoDTO) {
+		return articleDao.queryReportData(articleInfoDTO);
 	}
 	
 }
