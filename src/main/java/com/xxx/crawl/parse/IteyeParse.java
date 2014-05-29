@@ -29,7 +29,14 @@ import com.xxx.crawl.util.Util;
 
 public class IteyeParse extends AbstractParse{
 
-	private String rootUrl = UrlConsts.ITEYE_BLOG_URL;
+	private static List<String> rootUrls = new ArrayList<String>();
+	
+	static {
+		rootUrls.add(UrlConsts.ITEYE_BLOG_URL);
+		rootUrls.add(UrlConsts.ITEYE_EXPERT_BLOG_URL);
+	}
+	
+	private String currentRootUrl;
 	
 	@Override
 	public ArticleInfoDTO getArticleFromPage(String articleUrl) {
@@ -118,6 +125,13 @@ public class IteyeParse extends AbstractParse{
 		article.setUrl(articleUrl);
 		article.setReadTimes(readTimes);
 		article.setPublishDate(publishDate);
+		article.setAuthor(author);
+		article.setSource("ITEYE");
+		if(currentRootUrl.equals(UrlConsts.ITEYE_BLOG_URL)) {
+			article.setBlogId("小码哥BASE64");
+		} else if(currentRootUrl.equals(UrlConsts.ITEYE_EXPERT_BLOG_URL)) {
+			article.setBlogId("戈尔-D-罗杰");
+		}
 		return article;
 	}
 
@@ -133,12 +147,14 @@ public class IteyeParse extends AbstractParse{
 		NodeList nodelist = page.getBody();
 		NodeFilter filter = new CssSelectorNodeFilter("div[class='pagination']");
 		nodelist = nodelist.extractAllNodesThatMatch(filter, true);
-		Div div = (Div) nodelist.elementAt(0);
-		for(Node node : div.getChildrenAsNodeArray()) {
-			if(node.toPlainTextString().contains("下一页")) {
-				if(node instanceof LinkTag)
-					return UrlConsts.ITEYE_URL+((LinkTag)node).getAttribute("href");
-				break;
+		if(nodelist.size()>0) {
+			Div div = (Div) nodelist.elementAt(0);
+			for(Node node : div.getChildrenAsNodeArray()) {
+				if(node.toPlainTextString().contains("下一页")) {
+					if(node instanceof LinkTag)
+						return UrlConsts.ITEYE_URL+((LinkTag)node).getAttribute("href");
+					break;
+				}
 			}
 		}
 		return "";
@@ -147,10 +163,13 @@ public class IteyeParse extends AbstractParse{
 	@Override
 	public List<ArticleInfoDTO> getArticleInfo() {
 		List<ArticleInfoDTO> result = new ArrayList<ArticleInfoDTO>();
-		List<String> allUrls = getAllArticleUrls(rootUrl);
-		for(String url : allUrls) {
-			ArticleInfoDTO article = getArticleFromPage(url);
-			result.add(article);
+		for(String rootUrl : rootUrls) {
+			currentRootUrl = rootUrl;
+			List<String> allUrls = getAllArticleUrls(rootUrl);
+			for(String url : allUrls) {
+				ArticleInfoDTO article = getArticleFromPage(url);
+				result.add(article);
+			}
 		}
 		return result;
 	}
