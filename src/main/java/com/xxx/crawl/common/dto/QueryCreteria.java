@@ -1,7 +1,11 @@
 package com.xxx.crawl.common.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.xxx.crawl.common.util.StringUtil;
 
 public class QueryCreteria implements Serializable {
 	/**
@@ -57,5 +61,14 @@ public class QueryCreteria implements Serializable {
 	}
 	public void setBlogId(String blogId) {
 		this.blogId = blogId;
+	}
+	public List<String> getArticleTypeAsList() {
+		if(StringUtil.isNullOrEmpty(articleType)){
+			return null;
+		}else{
+			List<String> list=new ArrayList<String>();
+			list.add(articleType);
+			return list;
+		}
 	}
 }

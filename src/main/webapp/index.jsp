@@ -15,19 +15,22 @@
     	 articledata=$('#tt').datagrid({ 
     		url:'queryArticle.do', 
     		columns:[[ 
-    		{field:'title',title:'文章标题',width:100}, 
+    		{field:'title',title:'文章标题',width:200}, 
     		{field:'categorys',title:'文章类别',width:100}, 
     		{field:'author',title:'作者',width:100}, 
-    		{field:'readTimes',title:'访问量',width:60}, 
-    		{field:'commentTimes',title:'评论数',width:60}, 
-    		{field:'url',title:'文章链接',width:250}, 
+    		{field:'readTimes',title:'访问量',width:40}, 
+    		{field:'commentTimes',title:'评论数',width:40}, 
+    		{field:'url',title:'文章链接',width:350,
+    			formatter:function(rowdata){
+        			return "<a  target='blank_' href="+rowdata+">"+rowdata+"</a>";
+        		}
+    		}, 
     		{field:'devGroup',title:'分组',width:80}, 
-    		{field:'articlesrc',title:'文章来源',width:90}, 
-    		{field:'updateDate',title:'发表时间',width:100,
-    			render:function(rowdata){
-    			var d=	new Date();
-    			d.setTime(rowdata.updateDate);
-    			var s=d.format('yyyy-MM-dd HH:mm:ss');
+    		{field:'source',title:'文章来源',width:90}, 
+    		{field:'blogId',title:'博客ID',width:90}, 
+    		{field:'publishDate',title:'发表时间',width:150,
+    			formatter:function(rowdata){
+    			return json2TimeStamp(rowdata);
     		}
     		} 
     		
@@ -36,59 +39,56 @@
   
     });
     function search_(){
-    	var publishDateFrom=$("#publishDateFrom").val();
-    	var publishDateTo=$("#publishDateTo").val();
+    	alert();
+    	var publishDateFrom=$("#publishDateFrom").datebox('getValue');   
+    	var publishDateTo=$("#publishDateTo").datebox('getValue');
     	var author=$("#name").val();
     	var devGroup=$("#devGroup").val();
-    	alert(devGroup);
+    	var articleFrom=$("#articleFrom").val();
+    	var blogId=$("#blogId").val();
     	  $('#tt').datagrid('reload', {
     		  publishDateFrom:publishDateFrom,
    	 		  publishDateTo:publishDateTo,
-   	 		  devGroup:devGroup,
+   	 		  group:devGroup,
+   	 		  articleSource:articleFrom,
+   	 		  blogId:blogId,
     		  author:author
           });
     }
     
-    Date.prototype.format=function(fmt) {        
-        var o = {        
-        "M+" : this.getMonth()+1, //月份        
-        "d+" : this.getDate(), //日        
-        "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
-        "H+" : this.getHours(), //小时        
-        "m+" : this.getMinutes(), //分        
-        "s+" : this.getSeconds(), //秒        
-        "q+" : Math.floor((this.getMonth()+3)/3), //季度        
-        "S" : this.getMilliseconds() //毫秒        
-        };        
-        var week = {        
-        "0" : "\u65e5",        
-        "1" : "\u4e00",        
-        "2" : "\u4e8c",        
-        "3" : "\u4e09",        
-        "4" : "\u56db",        
-        "5" : "\u4e94",        
-        "6" : "\u516d"       
-        };        
-        if(/(y+)/.test(fmt)){        
-            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
-        }        
-        if(/(E+)/.test(fmt)){        
-            fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
-        }        
-        for(var k in o){        
-            if(new RegExp("("+ k +")").test(fmt)){        
-                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
-            }        
-        }        
-        return fmt;        
+  //时间格式化    
+
+    function json2TimeStamp(milliseconds){
+
+       if(milliseconds==null||milliseconds=="")
+          return "";
+        var datetime = new Date();
+        datetime.setTime(milliseconds);
+        var year=datetime.getFullYear();
+             //月份重0开始，所以要加1，当小于10月时，为了显示2位的月份，所以补0
+        var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+        var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+        var hour = datetime.getHours()< 10 ? "0" + datetime.getHours() : datetime.getHours();
+        var minute = datetime.getMinutes()< 10 ? "0" + datetime.getMinutes() : datetime.getMinutes();
+        var second = datetime.getSeconds()< 10 ? "0" + datetime.getSeconds() : datetime.getSeconds();
+        return year + "-" + month + "-" + date+" "+hour+":"+minute+":"+second;
     } 
+
+function report_(type){
+	if("html"==type){
+		$("#report").submit();
+	}else{
+		$("#reportdownload").submit();
+	}
+	
+}
   
     </script>
 </head>
 <body>
     <h2>文章查询</h2>
     <div style="margin:20px 0;"></div>
-     <table id="tt" class="easyui-datagrid" title="文章查询" style="margin-left:100px;width:1000px;height:850px;align:center"
+     <table id="tt" class="easyui-datagrid" title="文章查询" style="margin-left:100px;width:1300px;height:850px;align:center"
             data-options="rownumbers:true,singleSelect:true,url:'',method:'get',toolbar:'#tb'">
     </table>
    
@@ -96,14 +96,6 @@
         <div>
           <form action="queryArticle.do" id="searchForm" method="post">
             <table cellpadding="5">
-            	 <tr>
-                    <td> Date From:</td>
-                    <td><input  id="publishDateFrom"name="publishDateFrom" class="easyui-datebox" style="width:80px"></td>
-                    <td>To:</td>
-                    <td><input id="publishDateTo"name="publishDateTo" class="easyui-datebox" style="width:80px"></td>
-                    <td></td>
-                    <td> <a href="#" onclick="search_()" class="easyui-linkbutton" iconCls="icon-search">Search</a></td>
-                </tr>
                 <tr>
                     <td>作者:</td>
                     <td><input  id="name"name="name" ></input></td>
@@ -111,15 +103,27 @@
                     <td><input id="devGroup" name="devGroup" ></input></td>
                      <td>文章来源:</td>
                     <td><input id="articleFrom" name="articleFrom" ></input></td>
+                     <td>分类:</td>
+                    <td><input id="category" name="category"></input></td>
                 </tr>
                 <tr>
-                    <td>分类:</td>
-                    <td><input id="category" name="category"></input></td>
                      <td>博客ID:</td>
                     <td><input id="blogId" name="blogId"></input></td>
+                    <td> Date From:</td>
+                    <td><input  id="publishDateFrom"name="publishDateFrom" class="easyui-datebox" style="width:80px"></td>
+                    <td>To:</td>
+                    <td><input id="publishDateTo"name="publishDateTo" class="easyui-datebox" style="width:80px"></td>
+                    <td> <a href="#" onclick="search_()" class="easyui-linkbutton" iconCls="icon-search">Search</a>
+                    <a href="#" onclick="reset_()" class="easyui-linkbutton"> 重置</a>
+                    </td><td>
+                     <a href="#" onclick="report_('html')" class="easyui-linkbutton" >查看报表</a>
+                      <a href="#" onclick="report_('pdf')" class="easyui-linkbutton" >下载报表</a>
+                     </td>
                 </tr>
             </table>
         </form>
+        <form id="report" action="queryHtmlReport.do"></form>
+        <form id="reportdownload" action="downloadPdfReport.do" target="blank_"></form>
    
         </div>
     </div>

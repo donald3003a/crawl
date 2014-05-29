@@ -26,6 +26,13 @@ public class Util {
 		user.put("WZJ", "魏中佳");
 		user.put("ZZM", "赵芝明");
 		user.put("LW", "李巍");
+		user.put("ZRQ", "张睿千");
+		user.put("ZH", "张恒");
+		user.put("LB", "刘宝");
+		user.put("WL", "王丽");
+		user.put("WSL", "王苏龙");
+		user.put("WG", "王刚");
+		user.put("HF", "黄飞");
 		
 		
 	}

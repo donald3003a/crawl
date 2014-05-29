@@ -55,7 +55,7 @@ public class JasperReportServiceImpl  implements JasperReportService{
 		JRDataSource dataSource = new JRBeanCollectionDataSource(artileList);
 		JasperReport report = (JasperReport)JRLoader.loadObject(reportFilePath);
 		JasperPrint jasperPrint = JasperFillManager.fillReport(report, null, dataSource);
-		String htmlUrl=new Date().getTime()+".html";
+		String htmlUrl="report.html";
 		JasperExportManager.exportReportToHtmlFile(jasperPrint,htmlUrl);
 		return htmlUrl;
 		

@@ -1,5 +1,6 @@
 package com.xxx.crawl.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -47,8 +48,20 @@ public class ArticleDao extends BaseHibernateDao<Demo, Long> {
         if(dto.getGroup()!=null){
         	crit.add(Restrictions.eq("devGroup", dto.getGroup()));
         }
+        if(dto.getArticleSource()!=null){
+        	crit.add(Restrictions.eq("source", dto.getArticleSource()));
+        }
+        if(dto.getBlogId()!=null){
+        	crit.add(Restrictions.eq("blogId", dto.getBlogId()));
+        }
         if(dto.getPublishDateFrom()!=null&&dto.getPublishDateTo()!=null){
-        	crit.add(Expression.between("updateDate", dto.getPublishDateFrom(), dto.getPublishDateTo()));
+        	SimpleDateFormat df2=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        	System.out.println(df2.format(dto.getPublishDateFrom()));
+        	System.out.println(df2.format(dto.getPublishDateTo()));
+        	crit.add(Expression.between("publishDate", dto.getPublishDateFrom(), dto.getPublishDateTo()));
+        }
+        if(dto.getArticleTypeAsList()!=null&&dto.getArticleTypeAsList().size()>0){
+        	crit.add(Expression.in("categorys", dto.getArticleTypeAsList()));
         }
         crit.setFetchMode("categorys", org.hibernate.FetchMode.JOIN);
 		List<ArticleInfoDTO> results= crit.list();
