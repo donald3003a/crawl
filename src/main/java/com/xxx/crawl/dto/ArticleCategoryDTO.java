@@ -1,13 +1,12 @@
 package com.xxx.crawl.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -26,11 +25,18 @@ public class ArticleCategoryDTO implements Serializable{
 	private String category;  //文章分类
 	
 	@Column
-	private Long articleId;
+	private String url;
 	
-//	@ManyToOne(targetEntity = ArticleInfoDTO.class)
-//	@JoinColumn(name="articleId",updatable=false,insertable=false)
-//	private ArticleInfoDTO articleInfo;
+	@Column
+	private Date updateDate = new Date();
+	
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
 
 	public Long getArticleCategoryId() {
 		return articleCategoryId;
@@ -40,12 +46,12 @@ public class ArticleCategoryDTO implements Serializable{
 		this.articleCategoryId = articleCategoryId;
 	}
 
-	public Long getArticleId() {
-		return articleId;
+	public String getUrl() {
+		return url;
 	}
 
-	public void setArticleId(Long articleId) {
-		this.articleId = articleId;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public Long getId() {

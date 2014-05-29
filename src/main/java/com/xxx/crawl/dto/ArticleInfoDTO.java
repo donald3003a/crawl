@@ -21,37 +21,31 @@ import org.hibernate.annotations.GenericGenerator;
 public class ArticleInfoDTO implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
-
+	
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
-	private Long articleId;
-
+	private String url ;
+	
 	@Column
 	private String title;
 	@Column
 	private int readTimes;
 	@Column
 	private int commentTimes;
+	
 	@Column
-	private String url ;
-	@Column
-	private Date updateDate;
+	private Date publishDate;
 	@Column
 	private String author;
 	@Column
 	private String devGroup;
 	
+	@Column
+	private Date updateDate = new Date();
+	
 	@OneToMany(cascade=CascadeType.ALL,fetch = FetchType.LAZY)
-	@JoinColumn(name="articleId")
+	@JoinColumn(name="url")
 	private Set<ArticleCategoryDTO> categorys;
 	
-	public Long getArticleId() {
-		return articleId;
-	}
-	public void setArticleId(Long articleId) {
-		this.articleId = articleId;
-	}
 	public String getTitle() {
 		return title;
 	}
@@ -77,10 +71,10 @@ public class ArticleInfoDTO implements Serializable{
 		this.url = url;
 	}
 	public Date getUpdateDate() {
-		return updateDate;
+		return publishDate;
 	}
 	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
+		this.publishDate = updateDate;
 	}
 	public String getAuthor() {
 		return author;
@@ -99,6 +93,12 @@ public class ArticleInfoDTO implements Serializable{
 	}
 	public void setCategorys(Set<ArticleCategoryDTO> categorys) {
 		this.categorys = categorys;
+	}
+	public Date getPublishDate() {
+		return publishDate;
+	}
+	public void setPublishDate(Date publishDate) {
+		this.publishDate = publishDate;
 	}
 	
 }

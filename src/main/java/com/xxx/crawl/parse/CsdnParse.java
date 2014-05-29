@@ -1,6 +1,5 @@
 package com.xxx.crawl.parse;
 
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +29,8 @@ import com.xxx.crawl.util.Util;
 
 public class CsdnParse extends AbstractParse{
 
+	private String rootUrl = UrlConsts.CSDN_BLOG_URL;
+	
 	@Override
 	public ArticleInfoDTO getArticleFromPage(String articleUrl) {
 		
@@ -37,14 +38,31 @@ public class CsdnParse extends AbstractParse{
 		NodeList nodeList = getNodeList(htmlStr);
 		NodeFilter filter = new CssSelectorNodeFilter("div[class='details']");
 		NodeFilter titleFilter = new TagNameFilter("h1");
+		NodeFilter tagFilter = new CssSelectorNodeFilter("div[class='tag2box']");
 		NodeFilter articleInfoFilter = new CssSelectorNodeFilter("div[class='article_manage']");
 		
 		NodeList articleDetailNodes = nodeList.extractAllNodesThatMatch(filter, true);
 		NodeList titleNodes = articleDetailNodes.extractAllNodesThatMatch(titleFilter, true);
+		NodeList tagList = articleDetailNodes.extractAllNodesThatMatch(tagFilter, true);
 		NodeList articleInfoNodes = nodeList.extractAllNodesThatMatch(articleInfoFilter,true);
 		
 		String articleTitle = titleNodes.elementAt(0).toPlainTextString().trim();
 		articleTitle = Util.getCleanText(articleTitle);
+		
+		String group = null;
+		String author = null;
+		Div tagDiv = (Div)  tagList.elementAt(0);
+		if(tagDiv.getChildCount() > 0) {
+			String tagText = tagDiv.getChild(tagDiv.getChildCount()-1).toPlainTextString();
+			if(Util.matchTag(tagText)) {
+				group = tagText.split("-")[0];
+				group = Util.group.get(group.toUpperCase());
+				author = tagText.split("-")[1];
+				author = Util.user.get(author.toUpperCase());
+			}
+		}
+		
+		System.out.println(group+":" +author);
 		
 		Div div = (Div) articleInfoNodes.elementAt(0);
 		String category = "";
@@ -67,7 +85,6 @@ public class CsdnParse extends AbstractParse{
 					String commentText = span.toPlainTextString();
 					commentTimes  = Integer.valueOf(commentText.substring(commentText.indexOf("(")+1,commentText.indexOf(")")));
 				} else if(clazz.equals("link_postdate")) {
-					String dateText = span.toPlainTextString();
 					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 					try {
 						updateDate = sdf.parse(span.toPlainTextString().trim());
@@ -75,30 +92,6 @@ public class CsdnParse extends AbstractParse{
 						e.printStackTrace();
 					}
 				}
-//				switch(clazz) {
-//				case  "link_categories": 
-//					//第2个子元素为分类中文
-//					LinkTag linkTag = (LinkTag) span.getChild(1);
-//					category = linkTag.toPlainTextString();
-//					break;
-//				case "link_view":
-//					String text = span.toPlainTextString();
-//					views = Integer.parseInt(text.substring(0,text.indexOf("人阅读")));
-//					break;
-//				case "link_comments":
-//					String commentText = span.toPlainTextString();
-//					commentTimes  = Integer.valueOf(commentText.substring(commentText.indexOf("(")+1,commentText.indexOf(")")));
-//					break;
-//				case "link_postdate":
-//					String dateText = span.toPlainTextString();
-//					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-//					try {
-//						updateDate = sdf.parse(span.toPlainTextString().trim());
-//					} catch (ParseException e) {
-//						e.printStackTrace();
-//					}
-//					break;
-//				}
 			}
 		}
 		ArticleInfoDTO article = new ArticleInfoDTO(); 
@@ -112,6 +105,8 @@ public class CsdnParse extends AbstractParse{
 		article.setUrl(articleUrl);
 		article.setReadTimes(readTimes);
 		article.setUpdateDate(updateDate);
+		article.setDevGroup(group);
+		article.setAuthor(author);
 		return article;
 	}
 	
@@ -137,7 +132,7 @@ public class CsdnParse extends AbstractParse{
 	}
 
 	@Override
-	public List<ArticleInfoDTO> getArticleInfo(String rootUrl) {
+	public List<ArticleInfoDTO> getArticleInfo() {
 		List<ArticleInfoDTO> result = new ArrayList<ArticleInfoDTO>();
 		List<String> allUrls = getAllArticleUrls(rootUrl);
 		for(String url : allUrls) {
